@@ -1,24 +1,46 @@
 import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import {PokemonCharacter} from './components/PokemonCharacter';
 
 function App() {
+  const [isloading, setisLoading] = useState(false);
+  const [pokemonList, setPokemonlist] = useState({});
+  const fetchPokemonData = async() =>{
+    try{
+      setisLoading(true);
+    const res = await fetch("https://content.newtonschool.co/v1/pr/64ccef982071a9ad01d36ff6/pokemonspages1")
+    const data =await res.json();
+    console.log("data", data[0]);
+    setPokemonlist(data[0]);
+    }
+    catch(err){
+      console.log(err);
+    }
+    finally{
+      setisLoading(false);
+    }
+    
+  };
+  useEffect(() =>{
+    fetchPokemonData();
+  },[]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <main>
+      <header className='header-container'>
+        <h2>Pokemon</h2>
+        <h2>KingDom</h2>
       </header>
-    </div>
+      {isloading?(<div>Loading....</div>):(
+        <section className='card-container'>
+          {pokemonList.results && pokemonList.results.map(({name, url}, i)=>{
+            return <PokemonCharacter url={url} key={i} />
+          })}
+        </section>
+      )}
+      
+    </main>
   );
 }
 
