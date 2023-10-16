@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import "../App.css";
 import { PokemonCharacter } from "./PokemonCharacter";
@@ -6,6 +7,7 @@ function MainContainer() {
   const [isloading, setisLoading] = useState(false);
   const [pokemonList, setPokemonlist] = useState([]);
   const [nextUrl, setNextUrl] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   const fetchPokemonData = async (url) => {
     try {
@@ -24,6 +26,12 @@ function MainContainer() {
   const loadMorePokeMons = () => {
     fetchPokemonData(nextUrl);
   };
+  const handleInputChange = (event) => {
+    setSearchName(event.target.value);
+  };
+  const filteredPokemonList = pokemonList.filter((pokemon) => {
+    return pokemon.name.startsWith(searchName);
+  });
   useEffect(() => {
     fetchPokemonData(
       "https://content.newtonschool.co/v1/pr/64ccef982071a9ad01d36ff6/pokemonspages1"
@@ -37,15 +45,21 @@ function MainContainer() {
           <h2 className="second-h2">Pokemon &nbsp; KingDom</h2>
         </div>
       </header>
+      <input
+        className="searchPokeemon"
+        type="text"
+        placeholder="Enter Pokemon name"
+        value={searchName}
+        onChange={handleInputChange}
+      />
       {isloading ? (
         <div>Loading....</div>
       ) : (
         <section className="body-container">
           <section className="card-container">
-            {pokemonList &&
-              pokemonList.map(({ url }, i) => {
-                return <PokemonCharacter url={url} key={i} />;
-              })}
+            {filteredPokemonList.map(({ url, name }) => {
+              return <PokemonCharacter url={url} key={name} />;
+            })}
           </section>
           <button className="load-more" onClick={loadMorePokeMons}>
             More Pokemons
